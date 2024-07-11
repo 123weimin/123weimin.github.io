@@ -4,26 +4,25 @@
   
   
   <entry>
-    <title>“test”</title>
-    <link href="/2024/07/10/%E2%80%9Ctest%E2%80%9D/"/>
-    <url>/2024/07/10/%E2%80%9Ctest%E2%80%9D/</url>
+    <title>1.KubernetesPod</title>
+    <link href="/2024/07/10/1-KubernetesPod/"/>
+    <url>/2024/07/10/1-KubernetesPod/</url>
     
-    <content type="html"><![CDATA[]]></content>
-    
-    
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="/2024/07/09/hello-world/"/>
-    <url>/2024/07/09/hello-world/</url>
-    
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<p>[toc]</p><h1 id="1-什么是Pod？"><a href="#1-什么是Pod？" class="headerlink" title="1.什么是Pod？"></a>1.什么是Pod？</h1><ol><li>Pod是在kubernetes中管理和创建的最小工作单元，</li><li>pod是一个或者一组容器的集合，它们共享存储资源、网络资源以及关于pod运行的相关策略。</li><li>Pod 的共享上下文包括一组 Linux 名字空间、(namespace)控制组（cgroup）和可能一些其他的隔离方面， 即用来隔离容器的技术。 在 Pod 的上下文中，每个独立的应用可能会进一步实施隔离。</li></ol><p>在kubernetes中运行pod用法一般分为两种</p><ol><li><strong>运行单个容器的 Pod</strong>。”每个 Pod 一个容器”模型是最常见的 Kubernetes 用例； 在这种情况下，可以将 Pod 看作单个容器的包装器，并且 Kubernetes 直接管理 Pod，而不是容器。</li><li><strong>运行多个需要协同工作的容器的 Pod</strong>。 Pod 可以封装由多个紧密耦合且需要共享资源的并置容器组成的应用。 这些位于同一位置的容器可能形成单个内聚的服务单元。</li></ol><h1 id="2-创建Pod"><a href="#2-创建Pod" class="headerlink" title="2.创建Pod"></a>2.创建Pod</h1><p>创建一个pod可以分为两种方式来进行创建。一种可以直接通过Yaml文件进行创建，也可以直接通过kubectl工具进行创建。需要具备<a href="docker%E3%80%81containd">容器运行时</a></p><ol><li><p>yaml文件方式，创建一个test.yaml</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">vim</span> <span class="hljs-string">test.yaml</span>      <span class="hljs-comment">#编辑文件</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>     <span class="hljs-comment">#指定API版本！！</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span>   <span class="hljs-comment">#指定资源类型为POD，！！这里还可以指定其他的资源类型</span><br><span class="hljs-attr">metadata:</span>   <span class="hljs-comment">#资源元数据信息！！</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>   <span class="hljs-comment">#pod名称！！</span><br><span class="hljs-attr">spec:</span>              <span class="hljs-comment">#资源规格！！</span><br>  <span class="hljs-attr">containers:</span>      <span class="hljs-comment">#容器配置</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>    <span class="hljs-comment">#容器名称</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">docker.io/library/nginx:1.21.6</span> <span class="hljs-comment">#容器镜像版本</span><br>    <span class="hljs-attr">ports:</span>              <span class="hljs-comment">#指定容器端口</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span> <br></code></pre></td></tr></table></figure><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">kubectl apply -f <span class="hljs-keyword">test</span>.yaml  <span class="hljs-comment">#根据yaml文件创建pod</span><br></code></pre></td></tr></table></figure><p><img src="/1-KubernetesPodimage-20240605100339049-17175530630221" alt="image-20240605100339049"></p></li></ol><p>2.直接使用命令的方式创建Pod</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros">kubectl <span class="hljs-built_in">run</span> nginx <span class="hljs-attribute">--image</span>=docker.io/library/nginx:1.21.6 #创建一个名称为nginx的pod并指定镜像版本<br>kubectl <span class="hljs-built_in">run</span> nginx <span class="hljs-attribute">--image</span>=docker.io/library/nginx:1.21.6 <span class="hljs-attribute">--dry-run</span>=client -o yaml &gt;nginx.yaml #这种方式可以获取yaml文件<br></code></pre></td></tr></table></figure><p>通过以上两种方式部署的pod都属于临时pod，一般应用于对某个服务进行临时测试的作用。在生产环境中一般都是通过 Controller（<strong>控制器</strong>），来进行pod的资源管理以及调度。</p><h1 id="3-静态-Pod"><a href="#3-静态-Pod" class="headerlink" title="3.静态 Pod"></a>3.静态 Pod</h1><p>上面创建的pod的方式都是类似于普通Pod，它们的创建是通过API-server进行管理与调度的。静态 Pod（Static Pod）是由节点上的kubelet守护进程管理的。当我们使用<strong>kubectl -n default get pod</strong>可以看到关于静态Pod信息的，因为kubelet会自动尝试为每一个静态pod在API-server上注册一个镜像pod，</p><h1 id="4-Pod生命周期"><a href="#4-Pod生命周期" class="headerlink" title="4.Pod生命周期"></a>4.Pod生命周期</h1>]]></content>
     
     
+    <categories>
+      
+      <category>Kubernetes</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>学习</tag>
+      
+    </tags>
     
   </entry>
   
